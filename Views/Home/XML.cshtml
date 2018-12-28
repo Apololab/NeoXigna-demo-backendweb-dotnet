@@ -1,0 +1,39 @@
+﻿@using NeoXignaAPI.Entities
+@using NeoXignaDemo.Controllers
+@model DocumentStoreResponse
+
+<br>
+<br>
+
+<div class="row align-items-center">
+    
+    <div class="col-md-5">
+            <img class="border border-secondary rounded" style="" src='~/img/xml-preview.png' />
+    </div>
+    <div class="col-md-2">
+        
+    </div>
+    <div class="col-md-5">
+            <div style="text-align:center">
+                <p>Se ha subido el siguiente XML de prueba, el id es</p>
+                <span class="badge badge-primary">@Model.documentId</span>
+                <p>Utilice NeoXigna para firma con el siguiente QR</p>
+            </div>
+            
+        <div style="display: flex;justify-content: center">
+        @if (HomeController.IsMobile(Request))
+        {
+            <a href="@Model.qrText" class="btn btn-success active" role="button" aria-pressed="true">Firmar</a>
+        }
+        else
+        {
+            <img src='@Model.qrHTMLImage' />
+        }
+        </div>
+    </div>
+    <input type='hidden' id='documentId' name='documentId' value='@Model.documentId' />
+</div>
+
+@section PageScripts{
+    <script src="~/js/document-page.js"></script>
+}

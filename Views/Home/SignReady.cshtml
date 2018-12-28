@@ -1,0 +1,49 @@
+﻿@using NeoXignaAPI.Entities
+@using NeoXignaDemo.Controllers
+
+@{ 
+    DocumentDownload document = @ViewData["document"] != null ? @ViewData["document"] as DocumentDownload : null;  
+    string documentId = @ViewData["documentId"].ToString();
+    //string downloadUrl = Request.ToString()+ "  "+Url.ToString(); 
+    string downloadUrl = HomeController.GetRootPath(Request,Url) + "Home/DownloadSigned?documentId="+documentId;
+}
+@if (document != null)
+{
+<br>
+<br>
+<br>
+<div class="jumbotron">
+
+    <p>Se ha firmado satisfactoriamente el documento, el cual contiene las siguientes firmas</p>
+    
+    <ul class="list-group">
+    @foreach (var signature in document.signatureVerifications)
+    {
+
+        <li class="list-group-item list-group-item-dark">
+        <p><span><strong>@signature.signedBy</strong></span></p>
+
+        @{  
+            TimeZoneInfo targetTimeZone = TimeZoneInfo.CreateCustomTimeZone("CR", TimeSpan.FromHours(-6), "CR Time", "CR Time");
+            DateTime crSignTime = TimeZoneInfo.ConvertTime(signature.signDate, targetTimeZone);
+        }
+        <p><span>@crSignTime</span></p>
+            </li>
+    }
+    </ul>
+    
+    <br>
+    
+    
+    <div class="d-flex justify-content-center">
+    <input type='hidden' id='documentId' name='documentId' value='@documentId' />
+    <a href="@downloadUrl" class="btn btn-success active" role="button" aria-pressed="true">Descargar documento firmado</a>
+    </div>
+    
+    @section PageScripts{
+    
+    }
+
+
+</div>
+}

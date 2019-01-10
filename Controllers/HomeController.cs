@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
-using Apololab.Common.Http;
-using Apololab.Common.Http.Rest;
 using NeoXignaAPI;
 using NeoXignaAPI.Entities;
 using System.Threading.Tasks;
@@ -17,6 +13,7 @@ namespace NeoXignaDemo.Controllers
     {
         const string API_KEY = Global.API_KEY;
         const string END_USER_MESSAGE = "[Mensaje generado desde el cliente en web] Por favor firme el siguiente documento";
+        const int EXPIRATION_SECONDS = 120; // 2 minutes
 
         SignatureServices signatureServices = new SignatureServices(API_KEY);
 
@@ -37,11 +34,19 @@ namespace NeoXignaDemo.Controllers
                 {
                     // No se solicita la imagen del QR si se consulta desde un móvil, por que en vez del QR mostramos un botón
                     bool generateQRImage = !IsMobile(Request);
-                    Task<DocumentStoreResponse> documentTask = signatureServices.UploadPDFAsync(fileData: pdfData,
+#if MONO
+                    DocumentStoreResponse document = signatureServices.UploadPDFAsync(fileData: pdfData,
                                                                                                 contentLength: pdfData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
-                                                                                                generateQRHTMLImage: generateQRImage);
-                    DocumentStoreResponse document = await documentTask;
+                                                                                                generateQRHTMLImage: generateQRImage,
+                                                                                                expirationSeconds: EXPIRATION_SECONDS).Result;
+#else
+                    DocumentStoreResponse document = await signatureServices.UploadPDFAsync(fileData: pdfData,
+                                                                                                contentLength: pdfData.Length,
+                                                                                                endUserMessage: END_USER_MESSAGE,
+                                                                                                generateQRHTMLImage: generateQRImage,
+                                                                                                expirationSeconds: EXPIRATION_SECONDS);
+#endif
                     return View(document);
                 }
             } 
@@ -53,7 +58,7 @@ namespace NeoXignaDemo.Controllers
             }
         }
 
-        public async Task<ActionResult> XML()
+        public async Task<ActionResult> XADEST()
         {
             try
             {
@@ -61,13 +66,54 @@ namespace NeoXignaDemo.Controllers
                 {
                     // No se solicita la imagen del QR si se consulta desde un móvil, por que en vez del QR mostramos un botón
                     bool generateQRImage = !IsMobile(Request);
-
-                    Task<DocumentStoreResponse> documentTask = signatureServices.UploadXMLAsync(fileData: xmlData,
+#if MONO
+                    DocumentStoreResponse document = signatureServices.UploadXMLTAsync(fileData: xmlData,
                                                                                                 contentLength: xmlData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
-                                                                                                generateQRHTMLImage: generateQRImage);
-                    DocumentStoreResponse document = await documentTask;
-                    return View(document);
+                                                                                                generateQRHTMLImage: generateQRImage,
+                                                                                                expirationSeconds: EXPIRATION_SECONDS).Result;
+#else
+                    DocumentStoreResponse document = await signatureServices.UploadXMLTAsync(fileData: xmlData,
+                                                                                                contentLength: xmlData.Length,
+                                                                                                endUserMessage: END_USER_MESSAGE,
+                                                                                                generateQRHTMLImage: generateQRImage,
+                                                                                                expirationSeconds: EXPIRATION_SECONDS);
+#endif
+
+                    return View("XML",document);
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewData["error"] = Global.HandleError(ex);
+                return View("Error");
+
+            }
+        }
+
+        public async Task<ActionResult> XADESXL()
+        {
+            try
+            {
+                using (Stream xmlData = Assembly.GetExecutingAssembly().GetManifestResourceStream("Demo.xml"))
+                {
+                    // No se solicita la imagen del QR si se consulta desde un móvil, por que en vez del QR mostramos un botón
+                    bool generateQRImage = !IsMobile(Request);
+#if MONO
+                    DocumentStoreResponse document = signatureServices.UploadXMLXLAsync(fileData: xmlData,
+                                                                                                contentLength: xmlData.Length,
+                                                                                                endUserMessage: END_USER_MESSAGE,
+                                                                                                generateQRHTMLImage: generateQRImage,
+                                                                                                expirationSeconds: EXPIRATION_SECONDS).Result;
+#else
+                    DocumentStoreResponse document = await signatureServices.UploadXMLTAsync(fileData: xmlData,
+                                                                                                contentLength: xmlData.Length,
+                                                                                                endUserMessage: END_USER_MESSAGE,
+                                                                                                generateQRHTMLImage: generateQRImage,
+                                                                                                expirationSeconds: EXPIRATION_SECONDS);
+#endif
+
+                    return View("XML", document);
                 }
             }
             catch (Exception ex)

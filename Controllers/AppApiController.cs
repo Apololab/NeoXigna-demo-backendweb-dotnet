@@ -21,6 +21,7 @@ namespace NeoXignaDemo.Controllers
         /// mostrar al usuario información sobre lo que está por firmar
         /// </summary>
         const string END_USER_MESSAGE = "[Mensaje generado desde un app] Por favor firme el siguiente documento";
+        const int EXPIRATION_SECONDS = 120; // 2 minutes
 
         SignatureServices signatureServices = new SignatureServices(API_KEY);
 
@@ -30,15 +31,41 @@ namespace NeoXignaDemo.Controllers
             {
                 using (Stream xmlData = Assembly.GetExecutingAssembly().GetManifestResourceStream("Demo.xml"))
                 {
-                    Task<DocumentStoreResponse> documentTask = signatureServices.UploadXMLAsync(fileData: xmlData,
+                    Task<DocumentStoreResponse> documentTask = signatureServices.UploadXMLTAsync(fileData: xmlData,
                                                                                                 contentLength: xmlData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
-                                                                                                generateQRHTMLImage: false);
+                                                                                                generateQRHTMLImage: false,
+                                                                                                expirationSeconds: EXPIRATION_SECONDS);
                     DocumentStoreResponse document = await documentTask;
 
                     Session.Add(SESSION_DOC_ID, document.documentId);
 
                     return File(System.Text.Encoding.UTF8.GetBytes( document.qrText ), 
+                                System.Net.Mime.MediaTypeNames.Text.Plain); ;
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.InternalServerError, Global.HandleError(ex));
+            }
+        }
+
+        public async Task<ActionResult> XMLXL()
+        {
+            try
+            {
+                using (Stream xmlData = Assembly.GetExecutingAssembly().GetManifestResourceStream("Demo.xml"))
+                {
+                    Task<DocumentStoreResponse> documentTask = signatureServices.UploadXMLXLAsync(fileData: xmlData,
+                                                                                                contentLength: xmlData.Length,
+                                                                                                endUserMessage: END_USER_MESSAGE,
+                                                                                                generateQRHTMLImage: false,
+                                                                                                expirationSeconds: EXPIRATION_SECONDS);
+                    DocumentStoreResponse document = await documentTask;
+
+                    Session.Add(SESSION_DOC_ID, document.documentId);
+
+                    return File(System.Text.Encoding.UTF8.GetBytes(document.qrText),
                                 System.Net.Mime.MediaTypeNames.Text.Plain); ;
                 }
             }

@@ -22,8 +22,11 @@ namespace NeoXignaDemo.Controllers
         /// </summary>
         const string END_USER_MESSAGE = "[Mensaje generado desde un app] Por favor firme el siguiente documento";
         const int EXPIRATION_SECONDS = 120; // 2 minutes
+        const bool MANUAL_DESTROY = true; // Especifica si al subir un documento NeoXigna debe esperar una orden manual de destrucción. De no ser así NeoXigna destruye el documento en su tiempo por defecto (usualmente una hora)
 
         SignatureServices signatureServices = new SignatureServices(API_KEY);
+
+#region Llamadas a NeoXigna para almacenamiento de documentos 
 
         public async Task<ActionResult> XML()
         {
@@ -35,12 +38,13 @@ namespace NeoXignaDemo.Controllers
                                                                                                 contentLength: xmlData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: false,
-                                                                                                expirationSeconds: EXPIRATION_SECONDS);
+                                                                                                awaitForManualDestroy: MANUAL_DESTROY,
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS);
                     DocumentStoreResponse document = await documentTask;
 
                     Session.Add(SESSION_DOC_ID, document.documentId);
 
-                    return File(System.Text.Encoding.UTF8.GetBytes( document.qrText ), 
+                    return File(System.Text.Encoding.UTF8.GetBytes(document.qrText),
                                 System.Net.Mime.MediaTypeNames.Text.Plain); ;
                 }
             }
@@ -60,7 +64,8 @@ namespace NeoXignaDemo.Controllers
                                                                                                 contentLength: xmlData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: false,
-                                                                                                expirationSeconds: EXPIRATION_SECONDS);
+                                                                                                awaitForManualDestroy: MANUAL_DESTROY,
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS);
                     DocumentStoreResponse document = await documentTask;
 
                     Session.Add(SESSION_DOC_ID, document.documentId);
@@ -74,7 +79,10 @@ namespace NeoXignaDemo.Controllers
                 return new HttpStatusCodeResult(System.Net.HttpStatusCode.InternalServerError, Global.HandleError(ex));
             }
         }
+#endregion
 
+
+#region Funciones HTTP de soporte
         /// <summary>
         /// Consulta local para verificar si el identificador de documento ya fue firmado.
         /// </summary>
@@ -92,11 +100,18 @@ namespace NeoXignaDemo.Controllers
                 {
                     if (signatureInfo.Length > 0)
                         signatureInfo.Append("\n");
+
                     // La hora necesita ser convertida a hora de CR, debido a que aca podemos recibir la hora en formado del huso horario del servidor
                     TimeZoneInfo targetTimeZone = TimeZoneInfo.CreateCustomTimeZone("CR", TimeSpan.FromHours(-6), "CR Time", "CR Time");
-                    DateTime crSignTime = TimeZoneInfo.ConvertTime (signature.signDate, targetTimeZone);
-                    signatureInfo.Append(signature.signedBy + " | " + signature.signedBySerial + " | " + crSignTime);
+                    string crSignTime = signature.signDate != null ?
+                                        " | " + TimeZoneInfo.ConvertTime(signature.signDate.Value, targetTimeZone).ToString() :
+                                        string.Empty;
+
+                    signatureInfo.Append(signature.signedBy + " | " + signature.signedBySerial + crSignTime);
                 }
+                signatureInfo.Append("\n");
+                bool destroyed = NeoxignaCallbackController.DOC_DESTROYED_BY_ID.ContainsKey(documentId) && NeoxignaCallbackController.DOC_DESTROYED_BY_ID[documentId];
+                signatureInfo.Append(destroyed ? "documento destruido en neoxigna" : "No se pudo destruir el documento en neoxigna");
                 result = signatureInfo.ToString();
             }
             else if (NeoxignaCallbackController.SIGNING_DOCS_BY_ID.Contains(documentId))
@@ -108,8 +123,12 @@ namespace NeoXignaDemo.Controllers
                 result = "0";
             }
 
-            return File(System.Text.Encoding.UTF8.GetBytes(result),
+            return File(Encoding.UTF8.GetBytes(result),
                                 System.Net.Mime.MediaTypeNames.Text.Plain);
         }
+
+#endregion
+
+
     }
 }

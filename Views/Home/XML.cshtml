@@ -24,7 +24,7 @@
                 {
                 <p>Presione el siguiente botón firmar para abrir NeoXigna</p>
                 }
-                <p>Expiración: <span class="badge badge-warning">@Model.remainigSeconds segundos</span></p>
+                <p>Expiración: <span id="txt-expiration-seconds" class="badge badge-warning">@Model.remainigSeconds segundos</span></p>
             </div>
             
         <div style="display: flex;justify-content: center">
@@ -39,6 +39,7 @@
         </div>
     </div>
     <input type='hidden' id='documentId' name='documentId' value='@Model.documentId' />
+    <input type='hidden' id='remainingSeconds' name='remainingSeconds' value='@Model.remainigSeconds' />
 </div>
 
 @section PageScripts{

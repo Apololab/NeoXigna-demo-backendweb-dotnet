@@ -16,6 +16,8 @@ namespace NeoXignaDemo.Controllers
         SignatureServices signatureServices = new SignatureServices(Global.API_KEY);
 
         public static Dictionary<string, DocumentDownload> SIGNED_DOCS_BY_ID = new Dictionary<string, DocumentDownload>();
+        public static Dictionary<string, bool> DOC_DESTROYED_BY_ID = new Dictionary<string, bool>();
+
         public static List<string> SIGNING_DOCS_BY_ID = new List<string>();
         private static List<string> SIGNED_DOC_IDS = new List<string>(); // Solamente para llevar el orden
 
@@ -36,8 +38,13 @@ namespace NeoXignaDemo.Controllers
             if (!SIGNED_DOCS_BY_ID.ContainsKey(documentId))
             {
                 SIGNING_DOCS_BY_ID.Add(documentId);
+
                 Task<DocumentDownload> documentTask = signatureServices.DownloadDocumentAsync(documentId, downloadKey); // Descarga el documento solo una vez
-                SIGNED_DOCS_BY_ID[documentId] = await documentTask;
+                SIGNED_DOCS_BY_ID[documentId] = await documentTask; // Descarga el documento
+
+                bool destroyed = await DestroyDocumentAsync(documentId);
+                DOC_DESTROYED_BY_ID.Add(documentId, destroyed); // Luego de descargado se destruye en NeoXigna
+
                 SIGNED_DOC_IDS.Add(documentId);
                 if (SIGNED_DOC_IDS.Count > MAX_DOCS_IN_MEMORY)
                 {
@@ -49,6 +56,26 @@ namespace NeoXignaDemo.Controllers
                 SIGNING_DOCS_BY_ID.Remove(documentId);
             }
             return new EmptyResult();
+        }
+
+        #endregion
+
+
+        #region Utilidades
+        private async Task<bool> DestroyDocumentAsync(string documentId)
+        {
+            try
+            {
+                await signatureServices.DestroyDocumentDataAsync(documentId);
+                Console.WriteLine("El documento fue destruido en neoxigna");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("No fue posible destruir el documento");
+                Console.WriteLine(ex.StackTrace);
+                return false;
+            }
         }
 
         #endregion

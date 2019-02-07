@@ -1,20 +1,24 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoXignaDemo", "NeoXignaDemo.csproj", "{799500FA-F2D0-4E29-80C3-D9CB51DCDACC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		DebugMono|Any CPU = DebugMono|Any CPU
 		Release|Any CPU = Release|Any CPU
-		ReleaseStaging|Any CPU = ReleaseStaging|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{799500FA-F2D0-4E29-80C3-D9CB51DCDACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{799500FA-F2D0-4E29-80C3-D9CB51DCDACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{799500FA-F2D0-4E29-80C3-D9CB51DCDACC}.DebugMono|Any CPU.ActiveCfg = DebugMono|Any CPU
+		{799500FA-F2D0-4E29-80C3-D9CB51DCDACC}.DebugMono|Any CPU.Build.0 = DebugMono|Any CPU
 		{799500FA-F2D0-4E29-80C3-D9CB51DCDACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{799500FA-F2D0-4E29-80C3-D9CB51DCDACC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{799500FA-F2D0-4E29-80C3-D9CB51DCDACC}.ReleaseStaging|Any CPU.ActiveCfg = ReleaseStaging|Any CPU
-		{799500FA-F2D0-4E29-80C3-D9CB51DCDACC}.ReleaseStaging|Any CPU.Build.0 = ReleaseStaging|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

@@ -14,13 +14,15 @@ namespace NeoXignaDemo.Controllers
         const string API_KEY = Global.API_KEY;
         const string END_USER_MESSAGE = "[Mensaje generado desde el cliente en web] Por favor firme el siguiente documento";
         const int EXPIRATION_SECONDS = 120; // 2 minutes
+        const bool MANUAL_DESTROY = true; // Especifica si al subir un documento NeoXigna debe esperar una orden manual de destrucción. De no ser así NeoXigna destruye el documento en su tiempo por defecto (usualmente una hora)
 
         SignatureServices signatureServices = new SignatureServices(API_KEY);
 
-        #region Vistas y llamadas a NeoXigna 
+#region Vistas y llamadas a NeoXigna 
 
         public ActionResult Index()
         {
+            Apololab.Common.Http.ApoloHttpClient.DebugDelegate = (message) => Console.WriteLine(message);
             return View();
         }
         /// <summary>
@@ -39,13 +41,15 @@ namespace NeoXignaDemo.Controllers
                                                                                                 contentLength: pdfData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
-                                                                                                expirationSeconds: EXPIRATION_SECONDS).Result;
+                                                                                                awaitForManualDestroy : MANUAL_DESTROY,
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS).Result;
 #else
                     DocumentStoreResponse document = await signatureServices.UploadPDFAsync(fileData: pdfData,
                                                                                                 contentLength: pdfData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
-                                                                                                expirationSeconds: EXPIRATION_SECONDS);
+                                                                                                awaitForManualDestroy : MANUAL_DESTROY,
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS);
 #endif
                     return View(document);
                 }
@@ -71,13 +75,15 @@ namespace NeoXignaDemo.Controllers
                                                                                                 contentLength: xmlData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
-                                                                                                expirationSeconds: EXPIRATION_SECONDS).Result;
+                                                                                                awaitForManualDestroy: MANUAL_DESTROY,
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS).Result;
 #else
                     DocumentStoreResponse document = await signatureServices.UploadXMLTAsync(fileData: xmlData,
                                                                                                 contentLength: xmlData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
-                                                                                                expirationSeconds: EXPIRATION_SECONDS);
+                                                                                                awaitForManualDestroy : MANUAL_DESTROY,
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS);
 #endif
 
                     return View("XML",document);
@@ -104,13 +110,15 @@ namespace NeoXignaDemo.Controllers
                                                                                                 contentLength: xmlData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
-                                                                                                expirationSeconds: EXPIRATION_SECONDS).Result;
+                                                                                                awaitForManualDestroy: MANUAL_DESTROY,
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS).Result;
 #else
                     DocumentStoreResponse document = await signatureServices.UploadXMLTAsync(fileData: xmlData,
                                                                                                 contentLength: xmlData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
-                                                                                                expirationSeconds: EXPIRATION_SECONDS);
+                                                                                                awaitForManualDestroy : MANUAL_DESTROY,
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS);
 #endif
 
                     return View("XML", document);
@@ -139,6 +147,8 @@ namespace NeoXignaDemo.Controllers
 
                     ViewData["document"] = NeoxignaCallbackController.SIGNED_DOCS_BY_ID[documentId];
                     ViewData["documentId"] = documentId;
+                    ViewData["destroyed"] = NeoxignaCallbackController.DOC_DESTROYED_BY_ID.ContainsKey(documentId) && NeoxignaCallbackController.DOC_DESTROYED_BY_ID[documentId];
+
                     return View();
                 } else
                 {

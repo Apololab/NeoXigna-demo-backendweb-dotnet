@@ -1,13 +1,28 @@
 ﻿var HomePage = function(){
     self = this;
     self.documentId = '';
+    self.beginDate = new Date();
+    self.documentRemainingSeconds;
    
    
     self.init = function(){
         self.documentId = $('#documentId').val();
+        self.documentRemainingSeconds = $('#remainingSeconds').val();
+        self.updateRemainingSeconds();
         self.refresh();
     }
     
+    self.updateRemainingSeconds = function(){
+        var seconds = Math.round((new Date().getTime() - self.beginDate.getTime()) / 1000);
+        var remainingSeconds = self.documentRemainingSeconds - seconds;
+        if (remainingSeconds <= 0){
+            window.location.replace( GlobalPreprocessed.RootPath+'Home/');
+        } else {
+            var secondsTxt = remainingSeconds > 1 ? 'segundos' : 'segundo';
+            $('#txt-expiration-seconds').text( remainingSeconds+' '+secondsTxt);
+            setTimeout(self.updateRemainingSeconds, 1000);
+        }
+    }
     self.refresh = function () {
     
         console.log(self.documentId);

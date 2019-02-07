@@ -6,6 +6,7 @@
     string documentId = @ViewData["documentId"].ToString();
     //string downloadUrl = Request.ToString()+ "  "+Url.ToString(); 
     string downloadUrl = HomeController.GetRootPath(Request,Url) + "Home/DownloadSigned?documentId="+documentId;
+    string docDestroyed = ((bool)@ViewData["destroyed"]) ? "Si" : "No";
 }
 @if (document != null)
 {
@@ -22,17 +23,22 @@
 
         <li class="list-group-item list-group-item-dark">
         <p><span><strong>@signature.signedBy</strong></span></p>
-
-        @{  
+        
+        @if (signature.signDate != null)
+        {  
             TimeZoneInfo targetTimeZone = TimeZoneInfo.CreateCustomTimeZone("CR", TimeSpan.FromHours(-6), "CR Time", "CR Time");
-            DateTime crSignTime = TimeZoneInfo.ConvertTime(signature.signDate, targetTimeZone);
+            DateTime crSignTime = TimeZoneInfo.ConvertTime(signature.signDate.Value, targetTimeZone);
+        
+            <p><span>@crSignTime</span></p>
         }
-        <p><span>@crSignTime</span></p>
-            </li>
+        </li>
     }
     </ul>
     
     <br>
+    
+    
+    <p>Documento destruido en Neoxigna: @docDestroyed</p>
     
     
     <div class="d-flex justify-content-center">

@@ -42,16 +42,19 @@ namespace NeoXignaDemo.Controllers
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
                                                                                                 awaitForManualDestroy : MANUAL_DESTROY,
-                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS).Result;
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS,
+                                                                                                manageIFrameSignatureStatus : true).Result;
 #else
                     DocumentStoreResponse document = await signatureServices.UploadPDFAsync(fileData: pdfData,
                                                                                                 contentLength: pdfData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
                                                                                                 awaitForManualDestroy : MANUAL_DESTROY,
-                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS);
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS,
+                                                                                                manageIFrameSignatureStatus : true);
 #endif
-                    return View(document);
+                    ViewBag.isPDF = true;
+                    return View("Sign",document);
                 }
             } 
             catch (Exception ex)
@@ -76,17 +79,20 @@ namespace NeoXignaDemo.Controllers
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
                                                                                                 awaitForManualDestroy: MANUAL_DESTROY,
-                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS).Result;
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS,
+                                                                                                manageIFrameSignatureStatus : true).Result;
 #else
                     DocumentStoreResponse document = await signatureServices.UploadXMLTAsync(fileData: xmlData,
                                                                                                 contentLength: xmlData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
                                                                                                 awaitForManualDestroy : MANUAL_DESTROY,
-                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS);
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS,
+                                                                                                manageIFrameSignatureStatus: true);
 #endif
 
-                    return View("XML",document);
+                    ViewBag.isPDF = false;
+                    return View("Sign",document);
                 }
             }
             catch (Exception ex)
@@ -111,17 +117,19 @@ namespace NeoXignaDemo.Controllers
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
                                                                                                 awaitForManualDestroy: MANUAL_DESTROY,
-                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS).Result;
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS,
+                                                                                                manageIFrameSignatureStatus : true).Result;
 #else
                     DocumentStoreResponse document = await signatureServices.UploadXMLTAsync(fileData: xmlData,
                                                                                                 contentLength: xmlData.Length,
                                                                                                 endUserMessage: END_USER_MESSAGE,
                                                                                                 generateQRHTMLImage: generateQRImage,
                                                                                                 awaitForManualDestroy : MANUAL_DESTROY,
-                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS);
+                                                                                                signatureExpirationSecondstionSeconds: EXPIRATION_SECONDS,
+                                                                                                manageIFrameSignatureStatus: true);
 #endif
-
-                    return View("XML", document);
+                    ViewBag.isPDF = false;
+                    return View("Sign", document);
                 }
             }
             catch (Exception ex)

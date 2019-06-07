@@ -20,7 +20,7 @@ https://hassantariqblog.wordpress.com/2016/12/04/asp-net-install-nuget-package-n
 
 O bien se puede agregar el siguiente repositorio de Nuget
 
-http://104.208.137.45/repository/apolo-nuget-public/
+http://repo.apololab.com/repository/apolo-nuget-public/
 
 <br/>
 <h1>Prueba en vivo</h1>

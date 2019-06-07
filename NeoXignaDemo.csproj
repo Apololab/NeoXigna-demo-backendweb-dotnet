@@ -83,10 +83,10 @@
       <HintPath>packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Apololab.Common.RestClient">
-      <HintPath>packages\Apololab.Common.RestClient.1.0.3\lib\portable45-net45+win8\Apololab.Common.RestClient.dll</HintPath>
+      <HintPath>packages\Apololab.Common.RestClient.1.1.0\lib\portable45-net45+win8\Apololab.Common.RestClient.dll</HintPath>
     </Reference>
     <Reference Include="NeoXignaAPI">
-      <HintPath>packages\Apololab.NeoXigna.API.1.0.2\lib\portable45-net45+win8\NeoXignaAPI.dll</HintPath>
+      <HintPath>..\packages\Apololab.NeoXigna.API.1.1.0\lib\portable45-net45+win8\NeoXignaAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -112,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Web.config" />
-    <Content Include="Views\Home\PDF.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -129,7 +128,7 @@
     <Content Include="img\neoxigna_logo.png" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="img\xml-preview.png" />
-    <Content Include="Views\Home\XML.cshtml" />
+    <Content Include="Views\Home\Sign.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Demo.pdf">
